@@ -3,10 +3,10 @@ package com.sk.skala.myapp.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.sk.skala.myapp.domain.User;
 import com.sk.skala.myapp.repository.UserRepository;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
