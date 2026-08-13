@@ -1,0 +1,10 @@
+server :
+  port : 8080
+developer : 
+  owener : 
+    name : yeri
+    role : backend
+    level : easy
+  team : 
+    position : "5th floor"
+    detail : "class 8"

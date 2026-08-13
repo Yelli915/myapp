@@ -1,7 +1,7 @@
 package com.sk.skala.myapp.controller;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sk.skala.myapp.domain.User;
 import com.sk.skala.myapp.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -33,12 +36,6 @@ public class UserController {
     // GET: 특정 사용자 가져오기
     @GetMapping("/users/{id}")
     public User getUserById(@PathVariable long id) {
-        return userService.getUserById(id).orElse(null);
-    }
-
-    // GET: 특정 사용자 가져오기 @RequesstParam 사용
-    @GetMapping("/users")
-    public User getUserByIdParam(@RequestParam long id) {
         return userService.getUserById(id).orElse(null);
     }
 
