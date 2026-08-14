@@ -27,6 +27,23 @@ public class AsyncService {
     }
 
     /**
+     * 동기 메서드 - 비교용
+     */
+    public String syncMethod(String message) {
+        log.info("동기 메서드 시작 - Thread: {}, Message: {}",
+                 Thread.currentThread().getName(), message);
+        try {
+            Thread.sleep(2000); // 2초 대기
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        String result = "처리 완료: " + message;
+        log.info("동기 메서드 완료 - Thread: {}, Result: {}",
+                 Thread.currentThread().getName(), result);
+        return result;
+    }
+
+    /**
      * 비동기 메서드 - 반환값 있음 (CompletableFuture)
      */
     @Async("taskExecutor")
