@@ -4,18 +4,24 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sk.skala.myapp.domain.Product;
 import com.sk.skala.myapp.domain.ProductStatus;
+import com.sk.skala.myapp.domain.User;
 import com.sk.skala.myapp.repository.ProductRepository;
+import com.sk.skala.myapp.repository.UserRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
     // 전체 상품 조회
@@ -33,34 +39,48 @@ public class ProductService {
         return productRepository.findByStatus(status);
     }
 
-    // 상품 등록
-    public Product createProduct(Product product) {
+    // 사용자별 상품 목록 조회 (@ManyToOne 연관관계 활용)
+    public List<Product> getProductsByUserId(Long userId) {
+        return productRepository.findByUserId(userId);
+    }
+
+    // 사용자 이름으로 상품 목록 조회
+    public List<Product> getProductsByUserName(String userName) {
+        return productRepository.findByUserName(userName);
+    }
+
+    // 상품 등록 (userId로 User 조회 후 연결)
+    @Transactional
+    public Product createProduct(Product product, Long userId) {
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. id=" + userId));
+            product.setUser(user);
+        }
         return productRepository.save(product);
     }
 
-    // 상품 수정
-    public Optional<Product> updateProduct(Long id, Product updated) {
+    // 상품 수정 (userId 변경 가능)
+    @Transactional
+    public Optional<Product> updateProduct(Long id, Product updated, Long userId) {
         return productRepository.findById(id).map(product -> {
             product.setName(updated.getName());
             product.setPrice(updated.getPrice());
             product.setStockQuantity(updated.getStockQuantity());
             product.setStatus(updated.getStatus());
             product.setDescription(updated.getDescription());
+            if (userId != null) {
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. id=" + userId));
+                product.setUser(user);
+            }
             return productRepository.save(product);
         });
     }
 
     // 상품 삭제
+    @Transactional
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
-    
-    public List<Product> getProductsByUserId(Long userId){
-        return productRepository.findByUserId(userId);
-    }
-
-    public List<Product> getProductsByUserName(String userName){
-        return productRepository.findByUserName(userName);
-    }
-
 }
